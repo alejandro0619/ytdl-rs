@@ -1,15 +1,18 @@
 use std::io::Cursor;
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+use std::env;
  
-async fn fetch_url(url: String, file_name: String) -> Result<()> {
-    let response = reqwest::get(url).await?;
-    let mut file = std::fs::File::create(file_name)?;
-    let mut content =  Cursor::new(response.bytes().await?);
-    std::io::copy(&mut content, &mut file)?;
-    Ok(())
+async fn fetch_url(url: String, file_name: &str) {
+    let response = reqwest::get(url).await.unwrap();
+    let mut file = std::fs::File::create(file_name).unwrap();
+    let mut content =  Cursor::new(response.bytes().await.unwrap());
+    std::io::copy(&mut content, &mut file).unwrap();
 }
  
 #[tokio::main]
 async fn main() {
-    fetch_url("https://georgik.rocks/wp-content/uploads/sianim.gif".to_string(), "siriel.gif".to_string()).await.unwrap();
+    let path = env::current_dir();
+    let path = path.unwrap().join("dir/test.mp4");
+   fetch_url("https://dl185.y2mate.com?file=M3R4SUNiN3JsOHJ6WVo3MXN2Mlg5WVM5RkYrNHVyaHAwNFJxakZzWEZMdEFvNTVrOXEvckU5QmJKcWdCaG95dEE1Vng0enZLYU5LRU5CYkNsWmN6VUdDRXVkc3Q3WG5KK29JbFp0bHdRaDZsM3JTRmp6NWpuUkwzZTUyZk03VkdPVElwaFVNbWdRREE0T25FdFJUOHRYWC9ySExTUEh4YW9uVUdMYUdXOXBwSGlGL3VLZkw4dzVrWHFES1c3NThVaTZiSjRGZW5sdXB0NnBwbVNCbHdjY0U9".to_string(), path.to_str().unwrap()).await;
+
+   println!("{}", path.to_str().unwrap());
 }
