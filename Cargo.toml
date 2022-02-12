@@ -5,6 +5,9 @@ authors = ["spaghetti"]
 edition = "2018"
  
 [dependencies]
+dirs = "4.0.0"
 reqwest = "*"
 tokio = { version = "1", features = ["full"] }
+
+[features]
  
