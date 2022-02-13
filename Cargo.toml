@@ -1,10 +1,12 @@
 [package]
-name = "download"
+name = "ytdl_rs"
 version = "0.1.0"
 authors = ["spaghetti"]
 edition = "2018"
  
 [dependencies]
+colored = "2.0.0"
+console = "0.15.0"
 dirs = "4.0.0"
 reqwest = "*"
 tokio = { version = "1", features = ["full"] }
