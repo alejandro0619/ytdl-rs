@@ -8,7 +8,7 @@ async fn main() {
         .await
         .unwrap();
     let video_key: String = api::get_links_by_quality("auto", (keys, links)); // Get the video key depeding on the quality entered by the user
-                                                                              //if let Ok(_) = api::download_video("LINK".to_string(), directory.join("test4.mp4")).await { () } // Downloads the video
-    println!("Available qualities to download {:#?}", available_q);
-    println!("Video key: {}", video_key);
+    let download_link = api::get_download_link(video_id, video_key).await.unwrap();
+    if let Ok(_) = api::download_video(download_link, directory.join("test4.mp4")).await { () } // Downloads the video
+    
 }

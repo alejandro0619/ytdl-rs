@@ -5,20 +5,22 @@ pub mod api {
     use serde_json::{self, Map, Value};
     use std::io::Cursor;
     use std::path::PathBuf;
+    use console::Term;
 
     type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
     pub async fn download_video(url: String, file_name: PathBuf) -> Result<()> {
+        let term = Term::stdout();
+        println!("{}", "Downloading video... please wait".green());
         let response = reqwest::get(url).await?;
         let mut file = std::fs::File::create(file_name)?;
         let mut content = Cursor::new(response.bytes().await?);
-        std::io::copy(&mut content, &mut file)?;
-
+        std::io::copy(&mut content, &mut file).unwrap();
+        term.clear_screen()?;
         Ok(())
     }
-    /*
-     * Receives a url-compatible &string and returns a tuple with link keys and an object with those links
-     */
+
+    ///Receives a url-compatible &string and returns a tuple with link keys and an object with those links
     pub async fn fetch_video(
         video_url: &str,
     ) -> Result<(Vec<String>, serde_json::Value, Vec<String>, String)> {
@@ -86,5 +88,22 @@ pub mod api {
             }
         }
         video_key
+    }
+
+    pub async fn get_download_link(video_id: String, video_key: String) -> Result<String> {
+        const URL_BASE: &str = "https://9convert.com/api/ajaxConvert/convert";
+        let client = reqwest::Client::new();
+        let response_data = client
+            .post(URL_BASE)
+            .form(&[("vid", video_id), ("k", video_key)])
+            .header(CONTENT_TYPE, "application/json")
+            .send()
+            .await?
+            .text() // Converts the response into text
+            .await?;
+        let response_data = serde_json::from_str::<Value>(&response_data)?;
+        
+       println!("{}", &response_data.as_object().unwrap()["dlink"].as_str().unwrap().to_string());
+        Ok(response_data.as_object().unwrap()["dlink"].as_str().unwrap().to_string())
     }
 }
