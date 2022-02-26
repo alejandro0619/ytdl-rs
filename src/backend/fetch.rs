@@ -1,11 +1,11 @@
 pub mod api {
     // import neccesary modules
     use colored::*;
+    use console::Term;
     use reqwest::{self, header::CONTENT_TYPE};
     use serde_json::{self, Map, Value};
     use std::io::Cursor;
     use std::path::PathBuf;
-    use console::Term;
 
     type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
@@ -76,6 +76,7 @@ pub mod api {
         let quality = Value::String(quality.to_owned()); // Convert quality &str type into a a Value::String() type to use later.
         let (keys, links_obj) = links_tuple; // Destructuring th tuple.
         let mut links: Vec<&Map<std::string::String, Value>> = Vec::new(); // Creates a new vector
+
         for k in &keys {
             links.push(links_obj["links"]["mp4"][k].as_object().unwrap());
         }
@@ -102,8 +103,10 @@ pub mod api {
             .text() // Converts the response into text
             .await?;
         let response_data = serde_json::from_str::<Value>(&response_data)?;
-        
-       println!("{}", &response_data.as_object().unwrap()["dlink"].as_str().unwrap().to_string());
-        Ok(response_data.as_object().unwrap()["dlink"].as_str().unwrap().to_string())
+
+        Ok(response_data.as_object().unwrap()["dlink"]
+            .as_str()
+            .unwrap()
+            .to_string())
     }
 }
