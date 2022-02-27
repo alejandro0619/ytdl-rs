@@ -21,9 +21,9 @@ pub mod api {
     }
 
     ///Receives a url-compatible &string and returns a tuple with link keys and an object with those links
-    pub async fn fetch_video(
+    pub async fn fetch_video_info(
         video_url: &str,
-    ) -> Result<(Vec<String>, serde_json::Value, Vec<String>, String)> {
+    ) -> Result<(Vec<String>, serde_json::Value, Vec<String>, String, String)> {
         let mut available_q: Vec<String> = Vec::new(); // This vector stores all the qualities available fo the video to download
         println!("{}", "Fetching videos".blue());
         // Base Url to make the request.
@@ -66,14 +66,21 @@ pub mod api {
             );
         }
         let video_id = response_data["vid"].as_str().unwrap().to_string();
-        Ok((response_data_keys, response_data, available_q, video_id))
+        let video_title = response_data["title"].as_str().unwrap().to_string();
+        Ok((
+            response_data_keys,
+            response_data,
+            available_q,
+            video_id,
+            video_title,
+        ))
     }
 
     pub fn get_links_by_quality(
         quality: &str,
         links_tuple: (Vec<String>, serde_json::Value),
     ) -> String {
-        let quality = Value::String(quality.to_owned()); // Convert quality &str type into a a Value::String() type to use later.
+        //let quality = Value::String(quality.to_owned()); // Convert quality &str type into a a Value::String() type to use later.
         let (keys, links_obj) = links_tuple; // Destructuring th tuple.
         let mut links: Vec<&Map<std::string::String, Value>> = Vec::new(); // Creates a new vector
 
@@ -82,7 +89,7 @@ pub mod api {
         }
         let mut video_key = String::new();
         for (i, _) in links.iter().enumerate() {
-            if quality == links[i]["q"] {
+            if quality.to_owned() == links[i]["q"].as_str().unwrap() {
                 video_key = links[i]["k"].as_str().unwrap().to_string();
             } else {
                 continue;
