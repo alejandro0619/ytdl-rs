@@ -1,27 +1,23 @@
 pub mod api {
     // import neccesary modules
-    use crate::backend::notification;
+    mod util;
     use colored::*;
     use console::Term;
     use reqwest::{self, header::CONTENT_TYPE};
     use serde_json::{self, Map, Value};
     use std::io::Cursor;
     use std::path::PathBuf;
-
+    
     type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
     pub async fn download_video(url: String, file_name: PathBuf) -> Result<()> {
         let term = Term::stdout();
         println!("{}", "Downloading video... please wait".green());
         let response = reqwest::get(url).await?;
-        let mut file = std::fs::File::create(&file_name)?;
+        let mut file = std::fs::File::create(file_name)?;
         let mut content = Cursor::new(response.bytes().await?);
         std::io::copy(&mut content, &mut file).unwrap();
         term.clear_screen()?;
-        notification::send_notification(
-            "Download finished",
-            "The video was successfully downloaded",
-        )?;
         Ok(())
     }
 
@@ -46,15 +42,12 @@ pub mod api {
             .text() // Converts the response into text
             .await?;
 
-        //This will convert the text into a serde_json object
-        // This vector here will store every response_data key.
-        // I chose this approach because every key will always change (The keys that correspond to the different quality links).
-        // I did not know a better way to do this rathen than mapping every key inside a vector.
-        // !NOTE: in this vector there'll be only the keys that correspond to mp4 inner-object because
-        // ! Every other key is well known (such as title, account, status and so on) at the time of developing this app.
-        let response_data: Value = serde_json::from_str(response_data.as_str())?;
-        
-
+        let response_data: Value = serde_json::from_str(response_data.as_str())?; //This will convert the text into a serde_json object
+                                                                                  // This vector here will store every response_data key.
+                                                                                  // I chose this approach because every key will always change (The keys that correspond to the different quality links).
+                                                                                  // I did not know a better way to do this rathen than mapping every key inside a vector.
+                                                                                  // !NOTE: in this vector there'll be only the keys that correspond to mp4 inner-object because
+                                                                                  // ! Every other key is well known (such as title, account, status and so on) at the time of developing this app.
         let mut response_data_keys: Vec<String> = Vec::new();
 
         //Loop through every quality link
@@ -97,7 +90,7 @@ pub mod api {
         }
         let mut video_key = String::new();
         for (i, _) in links.iter().enumerate() {
-            if quality == links[i]["q"].as_str().unwrap() {
+            if quality.to_owned() == links[i]["q"].as_str().unwrap() {
                 video_key = links[i]["k"].as_str().unwrap().to_string();
             }
             continue;
@@ -116,7 +109,7 @@ pub mod api {
             .await?
             .text() // Converts the response into text
             .await?;
-        let response_data: Value = serde_json::from_str::<Value>(&response_data)?;
+        let response_data = serde_json::from_str::<Value>(&response_data)?;
 
         Ok(response_data.as_object().unwrap()["dlink"]
             .as_str()
