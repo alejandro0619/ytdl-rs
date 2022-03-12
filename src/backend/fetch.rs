@@ -20,7 +20,7 @@ pub mod api {
         term.clear_screen()?;
         notification::send_notification(
             "Download finished",
-            "The video was successfully downloaded",
+            "It was succesfully downloaded",
         )?;
         Ok(())
     }
@@ -28,13 +28,14 @@ pub mod api {
     ///Receives a url-compatible &string and returns a tuple with link keys and an object with those links
     pub async fn fetch_video_info(
         video_url: &str,
+        format: &str
     ) -> Result<(Vec<String>, serde_json::Value, Vec<String>, String, String)> {
         let mut available_q: Vec<String> = Vec::new(); // This vector stores all the qualities available fo the video to download
         println!("{}", "Fetching videos".blue());
         // Base Url to make the request.
         const URL_BASE: &str = "https://9convert.com/api/ajaxSearch/index";
         // These are the params, vt does not change as it will always download mp4
-        let params = [("query", video_url), ("vt", "mp4")];
+        let params = [("query", video_url), ("vt", format)];
         // Create a client to make post request
         let client = reqwest::Client::new();
         let response_data = client
@@ -58,7 +59,7 @@ pub mod api {
         let mut response_data_keys: Vec<String> = Vec::new();
 
         //Loop through every quality link
-        for x in response_data["links"]["mp4"].as_object().unwrap() {
+        for x in response_data["links"][format].as_object().unwrap() {
             let (key, value) = x; // key: &str, value: Value::Object
             let _value: &Map<std::string::String, Value> = value.as_object().unwrap(); // We convert Value::Object() into a real JSON.
                                                                                        // NOTE: I know I should use that variable above, but not yet.
@@ -67,7 +68,7 @@ pub mod api {
 
         for a in &response_data_keys {
             available_q.push(
-                response_data["links"]["mp4"][a].as_object().unwrap()["q"]
+                response_data["links"][format][a].as_object().unwrap()["q"]
                     .as_str()
                     .unwrap()
                     .to_string(),
@@ -87,13 +88,14 @@ pub mod api {
     pub fn get_links_by_quality(
         quality: &str,
         links_tuple: (Vec<String>, serde_json::Value),
+        format: &str
     ) -> String {
         //let quality = Value::String(quality.to_owned()); // Convert quality &str type into a a Value::String() type to use later.
         let (keys, links_obj) = links_tuple; // Destructuring the tuple.
         let mut links: Vec<&Map<std::string::String, Value>> = Vec::new(); // Creates a new vector
 
         for k in &keys {
-            links.push(links_obj["links"]["mp4"][k].as_object().unwrap());
+            links.push(links_obj["links"][format][k].as_object().unwrap());
         }
         let mut video_key = String::new();
         for (i, _) in links.iter().enumerate() {
