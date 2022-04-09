@@ -31,7 +31,7 @@ pub enum Format {
 // main
 #[tokio::main]
 async fn main() {
-    
+    // TO DOWNLOAD THE FILE
     let args = Args::parse();
     // Parse the Format enum:
 
@@ -54,5 +54,5 @@ async fn main() {
         directory.join(&format!("{}.{}", video_title, format)),
     )
     .await
-    .unwrap(); // Downloads the video
+    .unwrap(); // Downloads the file
 }
