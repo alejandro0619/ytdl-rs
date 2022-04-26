@@ -1,3 +1,4 @@
+
 pub mod api {
     // import neccesary modules
     mod util;
@@ -42,12 +43,13 @@ pub mod api {
             .text() // Converts the response into text
             .await?;
 
-        let response_data: Value = serde_json::from_str(response_data.as_str())?; //This will convert the text into a serde_json object
-                                                                                  // This vector here will store every response_data key.
-                                                                                  // I chose this approach because every key will always change (The keys that correspond to the different quality links).
-                                                                                  // I did not know a better way to do this rathen than mapping every key inside a vector.
-                                                                                  // !NOTE: in this vector there'll be only the keys that correspond to mp4 inner-object because
-                                                                                  // ! Every other key is well known (such as title, account, status and so on) at the time of developing this app.
+        let response_data: Value = serde_json::from_str(response_data.as_str())?; 
+        //This will convert the text into a serde_json object
+        // This vector here will store every response_data key.
+        // I chose this approach because every key will always change (The keys that correspond to the different quality links).
+        // I did not know a better way to do this rathen than mapping every key inside a vector.
+        // !NOTE: in this vector there'll be only the keys that correspond to mp4 inner-object because
+        // ! Every other key is well known (such as title, account, status and so on) at the time of developing this app.
         let mut response_data_keys: Vec<String> = Vec::new();
 
         //Loop through every quality link
@@ -111,9 +113,10 @@ pub mod api {
             .await?;
         let response_data = serde_json::from_str::<Value>(&response_data)?;
 
-        Ok(response_data.as_object().unwrap()["dlink"]
+        return Ok(response_data.as_object().unwrap()["dlink"]
             .as_str()
             .unwrap()
-            .to_string())
+            .to_string());
+
     }
 }

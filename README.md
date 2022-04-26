@@ -19,3 +19,4 @@ Ytdl-rs/
 ├── Cargo.toml
 └── Cargo.lock
 ```
+

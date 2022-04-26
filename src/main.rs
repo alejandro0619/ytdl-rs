@@ -1,6 +1,13 @@
+// Author: alejandro0619
+// github: github.com/alejandro0619/
+// contact me: spaghetticodedev@gmail.com
 mod backend;
 use backend::{fetch::api, get_directory};
 use clap::{ArgEnum, Parser};
+
+// TODO:
+// Improve the error managment
+
 
 // CLI
 #[derive(Debug, Parser)]
@@ -27,7 +34,7 @@ pub enum Format {
   Mp4,
   Mp3
 }
-
+  
 // main
 #[tokio::main]
 async fn main() {
@@ -42,6 +49,7 @@ async fn main() {
     
     // Search and create a directory to donwload videos.
     let directory = get_directory::create_vid_dir().unwrap();
+
     let (keys, links, _available_q, video_id, video_title) =
         api::fetch_video_info(&args.link, &format).await.unwrap();
     // Remove / if there's any
