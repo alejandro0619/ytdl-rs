@@ -2,21 +2,18 @@
 name = "ytdl_rs"
 version = "0.1.0"
 authors = ["spaghetti"]
-edition = "2018"
+edition = "2021"
  
 [dependencies]
-clap = { version = "4.0.18", features = ["derive"] }
-colored = "2.0.0"
-console = "0.15.0"
+cursive = "0.20.0"
 dirs = "4.0.0"
 notify-rust = "4.5.6"
 tokio = { version = "1.21.2", features = ["full"] }
 ytdlrs_lib = { git = "https://github.com/alejandro0619/ytdlrs_lib", branch = "main"}
+regex = "1.6.0"
 [dev-dependencies]
 windows = "0.32.0"
 
-[features]
- 
 
 [[bin]]
 name = "ytdlrs"
