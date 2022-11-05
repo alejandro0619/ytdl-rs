@@ -8,11 +8,11 @@ edition = "2021"
 cursive = "0.20.0"
 dirs = "4.0.0"
 notify-rust = "4.5.6"
-ytdlrs_lib = { git = "https://github.com/alejandro0619/ytdlrs_lib", branch = "main"}
+ytdlrs_lib = { git = "https://github.com/alejandro0619/ytdlrs_lib.git", branch = "main"}
 regex = "1.6.0"
+
 [dev-dependencies]
 windows = "0.32.0"
-
 
 [[bin]]
 name = "ytdlrs"

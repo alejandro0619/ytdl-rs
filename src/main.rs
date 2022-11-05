@@ -2,13 +2,11 @@
 // github: github.com/alejandro0619/
 // contact me: spaghetticodedev@gmail.com
 
-use cursive::traits::*;
-use cursive::views::{Button, Dialog, DummyView, EditView, LinearLayout, SelectView, TextView};
+use crate::backend::search_by_url;
+
+use cursive::view::{Nameable, Resizable};
+use cursive::views::{Button, Dialog, DummyView, EditView, LinearLayout, SelectView};
 use cursive::{Cursive, CursiveExt};
-use regex;
-use ytdlrs_lib::api::{
-    client::APIClientBuilder, downloader::DownloaderBuilder, search::SearchVideo,
-};
 mod backend;
 // CLI
 fn main() {
@@ -16,7 +14,36 @@ fn main() {
 
     let menu = LinearLayout::vertical()
         .child(Button::new("Search by query", search_query))
-        .child(Button::new("Search by url", search_url))
+        .child(Button::new("Search by url", |c: &mut Cursive| {
+            c.pop_layer();
+
+            let enter_url = Dialog::new()
+                .title("Enter the url:")
+                // we set the EditView witha fixed with of 40 spaces to
+                // give enough room to paste a youtube link.
+                .content(EditView::new().with_name("url").fixed_width(40))
+                // Now we send the video url.
+                .button("Send", |s| {
+                    //s.pop_layer();
+                    // We get the url
+                    let url = s.call_on_name("url", |v: &mut EditView| v.get_content());
+                    // We add a new layer to render a dialog that asks for the format of the video.
+                    s.add_layer(
+                        Dialog::new().title("Select a format").content(
+                            SelectView::new()
+                                .item("mp3", 1) // The first item is for mp3
+                                .item("mp4", 2) // The seconf item is for mp4
+                                .on_submit(move |c, f| {
+                                    search_by_url::search(c, *f, url.as_ref().unwrap().to_string())
+                                        .unwrap();
+                                    println!("El formato es: {:?} y la url es: {:?}", f, url);
+                                }),
+                        ),
+                    )
+                });
+            c.add_layer(enter_url);
+            //search_by_url::search()
+        }))
         .child(DummyView)
         .child(Button::new("Quit app", Cursive::quit));
 
@@ -31,48 +58,6 @@ fn main() {
     siv.add_global_callback('q', |s| s.quit());
     // We now run the app down here.
     siv.run();
-}
-
-fn search_url(c: &mut Cursive) {
-    // We do delete the current layer to render the new one.
-    c.pop_layer();
-    c.add_layer(
-        Dialog::new()
-            .title("Search by url")
-            .content(
-                EditView::new()
-                    .on_submit(search)
-                    .with_name("url")
-                    .fixed_width(45),
-            )
-            .button("Ok", move |s| {
-                let name = s
-                    .call_on_name("url", |view: &mut EditView| view.get_content())
-                    .unwrap();
-                // search(s, name);
-            }),
-    );
-}
-
-fn search(c: &mut Cursive, format: &str) {
-    c.pop_layer();
-    let format = String::from(format);
-    // ask if we wants mp3 or mp4
-    c.add_layer(
-        Dialog::new()
-            .title("Select format")
-            .content(
-                SelectView::new()
-                    .popup()
-                    .item("mp3", "mp3")
-                    .item("mp4", "mp4")
-                    .with_name("format"),
-            )
-            .button("Ok", move |s| {
-                s.pop_layer();
-                s.add_layer(Dialog::around(TextView::new(format.clone())));
-            }),
-    );
 }
 
 fn search_query(_c: &mut Cursive) {}
