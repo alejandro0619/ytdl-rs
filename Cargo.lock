@@ -2097,7 +2097,6 @@ dependencies = [
  "dirs 4.0.0",
  "notify-rust",
  "regex",
- "tokio",
  "windows 0.32.0",
  "ytdlrs_lib",
 ]

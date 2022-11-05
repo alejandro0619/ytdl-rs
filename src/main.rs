@@ -3,25 +3,15 @@
 // contact me: spaghetticodedev@gmail.com
 
 use cursive::traits::*;
-use cursive::views::{
-    Button, 
-    Dialog, 
-    DummyView, 
-    EditView, 
-    LinearLayout, 
-    SelectView, 
-};
+use cursive::views::{Button, Dialog, DummyView, EditView, LinearLayout, SelectView, TextView};
 use cursive::{Cursive, CursiveExt};
 use regex;
 use ytdlrs_lib::api::{
-    client::APIClientBuilder, 
-    downloader::DownloaderBuilder, 
-    search::SearchVideo,
+    client::APIClientBuilder, downloader::DownloaderBuilder, search::SearchVideo,
 };
 mod backend;
 // CLI
-#[tokio::main]
-async fn main() {
+fn main() {
     let mut siv = Cursive::new();
 
     let menu = LinearLayout::vertical()
@@ -34,10 +24,7 @@ async fn main() {
     siv.add_layer(
         Dialog::new()
             .title("Main menu 🦀")
-            .content(
-                LinearLayout::horizontal()
-                .child(menu)
-            )
+            .content(LinearLayout::horizontal().child(menu)),
     );
 
     // Press 'q' to close the app.
@@ -56,25 +43,20 @@ fn search_url(c: &mut Cursive) {
                 EditView::new()
                     .on_submit(search)
                     .with_name("url")
-                    .fixed_width(45)                    
+                    .fixed_width(45),
             )
-            .button("Ok", |s| {
+            .button("Ok", move |s| {
                 let name = s
-                    .call_on_name("url", |view: &mut EditView| {
-                        view.get_content()
-                    })
+                    .call_on_name("url", |view: &mut EditView| view.get_content())
                     .unwrap();
-                search(s, &name);
+                // search(s, name);
             }),
     );
 }
 
-async fn do_something(s: &mut Cursive, format: &str) {
-
-}
-fn search(c: &mut Cursive, format: &str){
+fn search(c: &mut Cursive, format: &str) {
     c.pop_layer();
-
+    let format = String::from(format);
     // ask if we wants mp3 or mp4
     c.add_layer(
         Dialog::new()
@@ -84,20 +66,13 @@ fn search(c: &mut Cursive, format: &str){
                     .popup()
                     .item("mp3", "mp3")
                     .item("mp4", "mp4")
-                    .with_name("format")
+                    .with_name("format"),
             )
-            .button("Ok", |s| {
-                let format = s
-                    .call_on_name("format", |view: &mut SelectView| {
-                        view.selection()
-                    })
-                    .unwrap();
-            }
-        ),
+            .button("Ok", move |s| {
+                s.pop_layer();
+                s.add_layer(Dialog::around(TextView::new(format.clone())));
+            }),
     );
-    
-}
-fn search_query(_c: &mut Cursive) {
-    
 }
 
+fn search_query(_c: &mut Cursive) {}
