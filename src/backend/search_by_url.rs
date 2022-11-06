@@ -1,7 +1,8 @@
 use cursive::Cursive;
 use ytdlrs_lib::api::{client, downloader::DownloaderBuilder};
 
-pub fn search(c: &mut Cursive, format: u8, url: String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn search(_c: &mut Cursive, format: u8, url: String) -> Result<(), Box<dyn std::error::Error>> {
+    println!("Hello, this works inside the function");
     let format = match format {
         1 => String::from("mp4"),
         2 => String::from("mp3"),

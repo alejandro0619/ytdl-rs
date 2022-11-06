@@ -1,11 +1,9 @@
 // Author: alejandro0619
 // github: github.com/alejandro0619/
 // contact me: spaghetticodedev@gmail.com
-
-use crate::backend::search_by_url;
-
+use backend::search_by_url::search;
 use cursive::view::{Nameable, Resizable};
-use cursive::views::{Button, Dialog, DummyView, EditView, LinearLayout, SelectView};
+use cursive::views::{Button, Dialog, DummyView, EditView, LinearLayout, SelectView, TextView};
 use cursive::{Cursive, CursiveExt};
 mod backend;
 // CLI
@@ -15,8 +13,6 @@ fn main() {
     let menu = LinearLayout::vertical()
         .child(Button::new("Search by query", search_query))
         .child(Button::new("Search by url", |c: &mut Cursive| {
-            c.pop_layer();
-
             let enter_url = Dialog::new()
                 .title("Enter the url:")
                 // we set the EditView witha fixed with of 40 spaces to
@@ -29,16 +25,12 @@ fn main() {
                     let url = s.call_on_name("url", |v: &mut EditView| v.get_content());
                     // We add a new layer to render a dialog that asks for the format of the video.
                     s.add_layer(
-                        Dialog::new().title("Select a format").content(
-                            SelectView::new()
-                                .item("mp3", 1) // The first item is for mp3
-                                .item("mp4", 2) // The seconf item is for mp4
-                                .on_submit(move |c, f| {
-                                    search_by_url::search(c, *f, url.as_ref().unwrap().to_string())
-                                        .unwrap();
-                                    println!("El formato es: {:?} y la url es: {:?}", f, url);
-                                }),
-                        ),
+                        Dialog::new()
+                            .title("Select a format")
+                            .content(TextView::new("Select a format to download."))
+                            .button("MP4", move |cs| {
+                                search(cs, 1, url.as_ref().unwrap().to_string()).unwrap()
+                            }),
                     )
                 });
             c.add_layer(enter_url);
