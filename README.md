@@ -1,5 +1,4 @@
 # ytdl-rs
-In process of rewritting.
 
 Lib: https://github.com/alejandro0619/ytdlrs_lib
 
