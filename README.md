@@ -6,7 +6,7 @@ Project paused until I get free time to continue making decision about the proje
 
 Lib: https://github.com/alejandro0619/ytdlrs_lib
 
-A not well-named youtube's videos downloader written in Rust 🦀
+A not well-named youtube's videos client downloader written in Rust 🦀
 
 For information about **how to use, legal section, next steps in the project, hpw to contribute and more**, please check [Wiki](https://github.com/alejandro0619/ytdl-rs/wiki).
 
