@@ -1,7 +1,5 @@
 # ytdl-rs
 
-Under heavy development.
-
 Project paused until I get free time to continue making decision about the project and solving bugs.
 
 Lib: https://github.com/alejandro0619/ytdlrs_lib
